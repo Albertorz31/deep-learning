@@ -20,7 +20,7 @@ class Checker:
         row_b = [np.concatenate([black, white] * int(self.res / self.tile / 2), axis=1)]
         row_w = [np.concatenate([white, black] * int(self.res / self.tile / 2), axis=1)]
         row_final = np.concatenate((row_b + row_w) * int(self.res / self.tile / 2), axis=0)
-        print(row_final)
+
         self.output = row_final
         return row_final.copy()
 
@@ -41,11 +41,27 @@ class Circle:
         x_axis = np.linspace(0, self.res)
         y_axis = np.linspace(0, self.res)
 
-        x, y = np.meshgrid[x_axis, y_axis]
+        x, y = np.meshgrid(x_axis, y_axis)
 
-        print(x)
+        dist_from_center = np.sqrt((x- self.pos[0])**2 + (y-self.pos[1])**2)
+        circle = dist_from_center <= self.radius
+        self.output = circle
 
-        print(y)
+        return circle.copy()
+
+    def show(self):
+        plt.imshow(self.output, cmap="gray")
+        plt.show()
+
+
+
+
+
+
+
+
+
+
 
 
 

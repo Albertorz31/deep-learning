@@ -5,8 +5,8 @@ checkers.draw()
 checkers.show()
 
 
-circle = pattern.Circle(1024, 200, (512, 256))
+circle = pattern.Circle(2048, 400, (512, 256))
 circle.draw()
-
+circle.show()
 
 
