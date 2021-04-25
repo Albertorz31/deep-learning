@@ -63,7 +63,6 @@ class ImageGenerator:
         batch = np.asarray(batch)
         self.labels = labels
         self.batch = batch
-        print(len(self.batch))
 
         if self.shuffle:
             self.batch, self.labels = self.shuffeF()
