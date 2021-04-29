@@ -58,41 +58,6 @@ class Circle:
         plt.show()
 
 
-def compute_color(i, j, color):
-    size = len(i)
-    red = color[0]
-    gre = color[1]
-    blu = color[2]
-
-    # how far is it from the corner? used for coloring;
-    d = np.sqrt(j ** 2 + i ** 2) / (np.sqrt(2) * size)
-
-    # color of pixes
-    r = d + red * (1 - d)
-    g = d + gre * (1 - d)
-    b = d + blu * (1 - d)
-
-    # fix overflows
-    r = np.clip(r, 0, 1)
-    g = np.clip(g, 0, 1)
-    b = np.clip(b, 0, 1)
-
-    return (np.array([r, g, b])).T
-
-
-def get_pic(size):
-    x = np.arange(size)
-    y = np.arange(size)
-    xx, yy = np.meshgrid(x, y)
-
-    B = np.flip(compute_color(xx, yy, [0, 0, 255]), axis=0)
-    R = np.flip(np.flip(compute_color(xx, yy, [255, 0, 0]), axis=0), axis=1)
-    Y = np.flip(compute_color(xx, yy, [255, 255, 0]), axis=1)
-    b = (compute_color(xx, yy, [0, 255, 255]))
-
-    return np.flip(R * B * b * Y * np.sqrt(2), axis=0)
-
-
 class Spectrum(object):
 
     def __init__(self, resolution):
@@ -100,14 +65,44 @@ class Spectrum(object):
         self.solution = None
 
     def draw(self):
-        self.solution = get_pic(self.resolution)
+        self.solution = self.get_pic(self.resolution)
 
     def show(self):
         plt.imshow(self.solution)
         plt.show()
 
     # used in get_pic for computing gradients for each color
+    def compute_color(self, i, j, color):
+        size = len(i)
+        red = color[0]
+        gre = color[1]
+        blu = color[2]
+
+        # how far is it from the corner? used for coloring;
+        d = np.sqrt(j ** 2 + i ** 2) / (np.sqrt(2) * size)
+
+        # color of pixes
+        r = d + red * (1 - d)
+        g = d + gre * (1 - d)
+        b = d + blu * (1 - d)
+
+        # fix overflows
+        r = np.clip(r, 0, 1)
+        g = np.clip(g, 0, 1)
+        b = np.clip(b, 0, 1)
+
+        return (np.array([r, g, b])).T
 
     # size -> picture function
     # combines together colors from compute_color
+    def get_pic(self, size):
+        x = np.arange(size)
+        y = np.arange(size)
+        xx, yy = np.meshgrid(x, y)
 
+        B = np.flip(self.compute_color(xx, yy, [0, 0, 255]), axis=0)
+        R = np.flip(np.flip(self.compute_color(xx, yy, [255, 0, 0]), axis=0), axis=1)
+        Y = np.flip(self.compute_color(xx, yy, [255, 255, 0]), axis=1)
+        b = (self.compute_color(xx, yy, [0, 255, 255]))
+
+        return np.flip(R * B * b * Y * np.sqrt(2), axis=0)
