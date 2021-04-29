@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 import tabulate
+import argparse
 
 ID = 0  # identifier for dispatcher
 
@@ -16,7 +17,7 @@ class TestCheckers(unittest.TestCase):
         # Creates a checkerboard pattern with resolution 250x250
         # and a tile_size of 25 and compares it to the reference image
 
-        from src_to_implement import pattern
+        import pattern
         c = pattern.Checker(250, 25)
         c.draw()
         np.testing.assert_almost_equal(c.output, self.reference_img)
@@ -25,7 +26,7 @@ class TestCheckers(unittest.TestCase):
         # Creates a checkerboard pattern with resolution 100x100
         # and a tile_size of 25 and compares it to the reference image
 
-        from src_to_implement import pattern
+        import pattern
         c = pattern.Checker(100, 25)
         c.draw()
         np.testing.assert_almost_equal(c.output, self.reference_img2)
@@ -33,7 +34,7 @@ class TestCheckers(unittest.TestCase):
     def testReturnCopy(self):
         # Checks whether the output of the pattern is a copy of the output object rather than the output object itself.
 
-        from src_to_implement import pattern
+        import pattern
         c = pattern.Checker(100, 25)
         res = c.draw()
         res[:] = 0
@@ -61,7 +62,7 @@ class TestCircle(unittest.TestCase):
         # Creates an image of a circle with resolution 1024x1024 a radius of 200 with a center at
         # (512,256) and compares it to the reference image using the IoU metric
 
-        from src_to_implement import pattern
+        import pattern
         c = pattern.Circle(1024, 200, (512, 256))
         circ = c.draw()
         iou = self._IoU(circ,self.reference_img)
@@ -70,7 +71,7 @@ class TestCircle(unittest.TestCase):
     def testPatternDifferentSize(self):
         # Creates an image of a circle with resolution 512x512 a radius of 20 with a center at
         # (50,50) and compares it to the reference image using the IoU metric
-        from src_to_implement import pattern
+        import pattern
         c = pattern.Circle(512, 20, (50, 50))
         circ = c.draw()
         iou = self._IoU(circ, self.reference_img2)
@@ -79,7 +80,7 @@ class TestCircle(unittest.TestCase):
 
     def testReturnCopy(self):
         # Checks whether the output of the pattern is a copy of the output object rather than the output object itself.
-        from src_to_implement import pattern
+        import pattern
         c = pattern.Circle(512, 20, (50, 50))
         res = c.draw()
         res[:] = 0
@@ -109,14 +110,14 @@ class TestSpectrum(unittest.TestCase):
 
     def testPattern(self):
         # Creates an RGB spectrum with resolution 255x255x3 and compares it to the reference image
-        from src_to_implement import pattern
+        import pattern
         s = pattern.Spectrum(255)
         spec = s.draw()
         np.testing.assert_almost_equal(spec, self.reference_img, decimal=2)
 
     def testPatternDifferentSize(self):
         # Creates an RGB spectrum with resolution 100x100x3 and compares it to the reference image
-        from src_to_implement import pattern
+        import pattern
         s = pattern.Spectrum(100)
         spec = s.draw()
         np.testing.assert_almost_equal(spec, self.reference_img2, decimal=2)
@@ -124,7 +125,7 @@ class TestSpectrum(unittest.TestCase):
     def testReturnCopy(self):
         # Checks whether the output of the pattern is a copy of the
         # output object rather than the output object itself.
-        from src_to_implement import pattern
+        import pattern
         c = pattern.Spectrum(100)
         res = c.draw()
         res[:] = 0
@@ -135,8 +136,8 @@ class TestSpectrum(unittest.TestCase):
 class TestGen(unittest.TestCase):
     def setUp(self):
         # Set the label and the file path
-        self.label_path = 'Labels.json'
-        self.file_path = 'exercise_data/'
+        self.label_path = './Labels.json'
+        self.file_path = './exercise_data/'
 
     def _get_corner_points(self, image):
         # Utility function to check whether the augmentations where performed

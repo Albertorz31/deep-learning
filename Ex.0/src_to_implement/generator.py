@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os.path
 from PIL import Image
-from random import randrange
 
 
 # In this exercise task you will implement an image generator. Generator objects in python are defined as having a next function.
@@ -16,48 +15,53 @@ class ImageGenerator:
         # Note that the file names correspond to the dicts of the label dictionary.
         self.file_path = os.path.join(file_path)
         self.label_path = os.path.join(label_path)
-        self.batch_size = batch_size
+        self.batch_size = int(batch_size)
         self.image_size = image_size
         self.rotation = rotation
         self.mirroring = mirroring
         self.shuffle = shuffle
-        self.labels = None
-        self.batch = None
+        self.how_many_call = 0
 
         self.class_dict = {0: 'airplane', 1: 'automobile', 2: 'bird', 3: 'cat', 4: 'deer', 5: 'dog', 6: 'frog',
                            7: 'horse', 8: 'ship', 9: 'truck'}
+        self.labels = None
+        self.batch = None
         # TODO: implement constructor
 
     def next(self):
-        images = []
-        # we need to have the number of images in a batch
-        for f in os.listdir(self.file_path):
-            images.append(os.path.join(self.file_path, f))
-
+        # This function creates a batch of images and corresponding labels and returns it.
+        # Note that your amount of total data might not be divisible without remainder with the batch_size.
+        # Think about how to handle such cases
+        images = [os.path.join(self.file_path, f) for f in os.listdir(self.file_path)]
         images.sort()
         total_images_count = len(images)
-        index = randrange(total_images_count)
 
-        if index + self.batch_size > total_images_count:
-            aux = index - self.batch_size
-            select_images = images[aux:index]
+        beginning = (self.how_many_call * self.batch_size) % total_images_count
+
+        if (beginning + self.batch_size) > total_images_count:
+            taken_images = images[beginning:]
+            how_many_remaning = self.batch_size - len(taken_images)
+            taken_images += images[:how_many_remaning]
         else:
-            select_images = images[index:index + self.batch_size]
-
-        batch = []
-        labels = []
+            taken_images = images[beginning:beginning + self.batch_size]
 
         f = open(self.label_path)
         data = json.load(f)
 
-        for picture in select_images:
-            picture_array = np.load(picture)
+        batch = []
+        labels = []
+
+        for image in taken_images:
+            image_array = np.load(image)
             # We interpolation the data of  the images using the fuction resize regarding (height, width and channel)
-            image_array_resized = np.array(Image.fromarray(picture_array).resize(self.image_size[:2]))
+            image_array_resized = np.array(Image.fromarray(image_array).resize(self.image_size[:2]))
+            image_array_resized = self.augment(image_array_resized)
             batch.append(image_array_resized)
             # Append the labels of array
-            label_of_the_image = data[picture.split("/")[-1][:-4]]
+            label_of_the_image = data[image.split("/")[-1][:-4]]
             labels.append(label_of_the_image)
+
+        self.how_many_call += 1
 
         labels = np.asarray(labels)
         batch = np.asarray(batch)
@@ -65,44 +69,38 @@ class ImageGenerator:
         self.batch = batch
 
         if self.shuffle:
-            self.batch, self.labels = self.shuffeF()
+            self.batch, self.labels = self.shuffle_it()
 
-        if self.mirroring==True or self.rotation==True:
+        if self.rotation:
             for i in range(len(self.batch)):
                 img = self.batch[i]
                 self.batch[i] = self.augment(img)
 
-        return images, labels
+        return self.batch, self.labels
 
-    def shuffeF(self):
+    def shuffle_it(self):
         indices = np.arange(self.batch_size)
         np.random.shuffle(indices)
         self.batch = self.batch[indices]
         self.labels = self.labels[indices]
-        return (self.batch, self.labels)
+        return self.batch, self.labels
 
     def augment(self, img):
-        # this function takes a single image as an input and performs a random transformation
-        # (mirroring and/or rotation) on it and outputs the transformed image
-
-        # Mirror images randomly
-        if (self.mirroring==True):
+        if self.mirroring:
             img = np.fliplr(img)
-            return img
 
-        if (self.rotation==True):
+        if self.rotation:
             # Rotate images by 90, 180, 270 degrees.
             value = np.random.randint(0, 3)
-            if (value == 0):
+            if value == 0:
                 img = np.rot90(img, k=1)
-            elif (value == 1):
+            elif value == 1:
                 img = np.rot90(img, k=2)
-            elif (value == 2):
+            elif value == 2:
                 img = np.rot90(img, k=3)
             else:
                 print("There is a problem with rotation")
                 raise Exception
-
         return img
 
     def class_name(self, x):
@@ -115,9 +113,7 @@ class ImageGenerator:
         return name
 
     def show(self):
-
         fig = plt.figure(figsize=(8, 8))
-
         primo = 1
         numbers = []
         columns = 0
@@ -140,7 +136,6 @@ class ImageGenerator:
         list_sort = sorted(numbers)
         half = int(len(list_sort) / 2)
 
-        # Comprobamos si el total de elementos es par
         if len(list_sort) % 2 == 0:
             columns = int((list_sort[half] + list_sort[half - 1]) / 2)
         else:
@@ -148,8 +143,8 @@ class ImageGenerator:
 
         rows = int(self.batch_size / columns)
 
-        ax=[]
-        for i in range(columns*rows):
+        ax = []
+        for i in range(columns * rows):
             img = self.batch[i]
             ax.append(fig.add_subplot(rows, columns, i + 1))
             ax[-1].set_title(self.class_dict[self.labels[i]], fontdict={'size': 18})  # set title
@@ -157,4 +152,3 @@ class ImageGenerator:
             plt.imshow(img)
         plt.subplots_adjust(top=0.88, bottom=0.11, left=0.11, right=0.9, hspace=0.385, wspace=0.235)
         plt.show()
-
