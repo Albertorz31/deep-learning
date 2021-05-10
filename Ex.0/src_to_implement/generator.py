@@ -20,12 +20,12 @@ class ImageGenerator:
         self.rotation = rotation
         self.mirroring = mirroring
         self.shuffle = shuffle
-        self.how_many_call = 0
 
         self.class_dict = {0: 'airplane', 1: 'automobile', 2: 'bird', 3: 'cat', 4: 'deer', 5: 'dog', 6: 'frog',
                            7: 'horse', 8: 'ship', 9: 'truck'}
         self.labels = None
         self.batch = None
+        self.call = 0
         # TODO: implement constructor
 
     def next(self):
@@ -36,14 +36,15 @@ class ImageGenerator:
         images.sort()
         total_images_count = len(images)
 
-        beginning = (self.how_many_call * self.batch_size) % total_images_count
+        index = (self.call * self.batch_size)
+        begin = index  % total_images_count
 
-        if (beginning + self.batch_size) > total_images_count:
-            taken_images = images[beginning:]
-            how_many_remaning = self.batch_size - len(taken_images)
-            taken_images += images[:how_many_remaning]
+        if (begin+ self.batch_size) > total_images_count:
+            taken_images = images[begin:]
+            aux = self.batch_size - len(taken_images)
+            taken_images += images[:aux]
         else:
-            taken_images = images[beginning:beginning + self.batch_size]
+            taken_images = images[begin:begin + self.batch_size]
 
         f = open(self.label_path)
         data = json.load(f)
@@ -61,7 +62,7 @@ class ImageGenerator:
             label_of_the_image = data[image.split("/")[-1][:-4]]
             labels.append(label_of_the_image)
 
-        self.how_many_call += 1
+        self.call += 1
 
         labels = np.asarray(labels)
         batch = np.asarray(batch)
