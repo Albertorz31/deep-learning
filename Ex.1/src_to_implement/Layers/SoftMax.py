@@ -6,13 +6,13 @@ class SoftMax:
         self.input_tensor = None
         self.error_tensor = None
         self.y = None
+        self.trainable = False
 
     def forward(self, input_tensor):
         # a = exp(X_k)
         exp_input = np.exp(input_tensor - np.max(input_tensor))
-        # b = sum(exp(X_k)
         # y = a/b
-        self.y = exp_input / exp_input.sum(axis=0)
+        self.y = exp_input / exp_input.sum(axis=0) # b = sum(exp(X_k)
         return self.y
 
     def backward(self, error_tensor):

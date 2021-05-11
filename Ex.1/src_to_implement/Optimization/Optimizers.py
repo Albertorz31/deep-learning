@@ -1,4 +1,4 @@
-class Sdg:
+class Sgd:
     def __init__(self, learning_rate):
         self.learning_rate = float(learning_rate)
 
