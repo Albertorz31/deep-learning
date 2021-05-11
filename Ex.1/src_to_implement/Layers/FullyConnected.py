@@ -34,15 +34,19 @@ class FullyConnected():
         previous_error = np.matmul(error_tensor, np.transpose(self.weights))
         # we removing bias part
         previous_error = previous_error[:, :-1]
+
+        # Gradient = X'transpose*E(n)'
+        self.gradient_weights = np.matmul(np.transpose(self.input_tensor), self.error_tensor)
+
+        if self._optimizer:
+            # Optimizers.Sgd(w, g).calculate_update
+            self.weights = self._optimizer.calculate_update(self.weights, self.gradient_weights)
+
         return np.copy(previous_error)
 
     @property
     def optimizer(self):
-        if self._optimizer is None:
-            return self.weights
-        # Optimizers.Sgd(w, g).calculate_update
-        update_w = self._optimizer.calculate_update(self.weights, self.gradient_weights)
-        return update_w
+        return self._optimizer
 
     @optimizer.setter
     def optimizer(self, value):
@@ -51,11 +55,7 @@ class FullyConnected():
 
     @property
     def gradient_weights(self):
-        # Gradient = X'transpose*E(n)'
-        self.gradient_weights = np.matmul(np.transpose(self.input_tensor), self.error_tensor)
-        # Calls optimizer property to set updated_weight
-        updated_w = self.optimizer
-        return updated_w  # W'(t+1)
+        return self.gradient_weights
 
     @gradient_weights.setter
     def gradient_weights(self, value):
