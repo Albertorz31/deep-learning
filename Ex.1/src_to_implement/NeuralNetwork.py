@@ -13,17 +13,16 @@ class NeuralNetwork:
         self.trainable = None
 
     def forward(self):
-        input_tensor, label_tensor = self.data_layer.forward()
+        input_tensor, label_tensor = self.data_layer.next()
         self.input_tensor = input_tensor
         self.label_tensor = label_tensor
-        #Iterative over each layer and use
+        # Iterative over each layer and use
         for layer in self.layers:
-            input_tensor = layer.next(input_tensor)
+            input_tensor = layer.forward(input_tensor)
         # The last layer = loss layer
         loss = self.loss_layer.forward(input_tensor, label_tensor)
         # Append loss into loss list
         self.loss.append(loss)
-        print(loss)
         return loss
 
     def backward(self):
@@ -41,14 +40,9 @@ class NeuralNetwork:
         for i in range(iterations):
             self.forward()
             self.backward()
+
     def test(self, input_tensor):
         for layer in self.layers:
             # iterative over each layer
             input_tensor = layer.forward(input_tensor)
         return input_tensor
-
-
-
-
-
-

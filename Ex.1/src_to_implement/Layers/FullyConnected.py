@@ -18,7 +18,7 @@ class FullyConnected():
         # adding bias self.input_size + 1
         self.weights = np.random.rand(self.input_size + 1, self.output_size)
         self._optimizer = None
-        self.gradient_weights = None
+        self._gradient_weights = np.zeros_like(self.weights)
 
     def forward(self, input_tensor):
         # [x1 x2 x3 . . . 1]
@@ -40,7 +40,7 @@ class FullyConnected():
 
         if self._optimizer:
             # Optimizers.Sgd(w, g).calculate_update
-            self.weights = self._optimizer.calculate_update(self.weights, self.gradient_weights)
+            self.weights = self._optimizer.calculate_update(self.weights, self._gradient_weights)
 
         return np.copy(previous_error)
 
@@ -55,8 +55,8 @@ class FullyConnected():
 
     @property
     def gradient_weights(self):
-        return self.gradient_weights
+        return self._gradient_weights
 
     @gradient_weights.setter
     def gradient_weights(self, value):
-        self.gradient_weights = value
+        self._gradient_weights = value
