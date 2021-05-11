@@ -36,6 +36,7 @@ class NeuralNetwork:
             layer.optimizer = optimizer
         self.layers.append(layer)
 
+    # function trains the network for iterations and stores the loss for each iteration.
     def train(self, iterations):
         for i in range(iterations):
             self.forward()
@@ -45,4 +46,5 @@ class NeuralNetwork:
         for layer in self.layers:
             # iterative over each layer
             input_tensor = layer.forward(input_tensor)
+        # returns the prediction of the last layer
         return input_tensor

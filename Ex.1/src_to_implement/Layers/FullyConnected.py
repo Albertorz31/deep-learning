@@ -50,7 +50,6 @@ class FullyConnected():
 
     @optimizer.setter
     def optimizer(self, value):
-        # _optimizer = Optimizers.Sgd(value)
         self._optimizer = value
 
     @property

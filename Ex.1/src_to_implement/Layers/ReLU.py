@@ -1,6 +1,6 @@
 import numpy as np
 
-
+#Standar activation function in DL
 class ReLU:
     def __init__(self):
         super().__init__()
