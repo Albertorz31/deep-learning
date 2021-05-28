@@ -20,6 +20,12 @@ class FullyConnected():
         self._optimizer = None
         self._gradient_weights = np.zeros_like(self.weights)
 
+    def initialize(self,weights_initializer, bias_initializer):
+        # Initialize the weight and for separate the bias initialize
+        self.weights = weights_initializer.initialize(self.weights.shape, self.input_size, self.output_size)
+        self.weights[-1] = bias_initializer.initialize(self.output_size, self.input_size, self.output_size)
+
+
     def forward(self, input_tensor):
         # [x1 x2 x3 . . . 1]
         self.input_tensor = np.append(input_tensor, np.ones((len(input_tensor), 1)), axis=1)
