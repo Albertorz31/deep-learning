@@ -1,11 +1,12 @@
 import numpy as np
-from src_to_implement.Layers.Base import BaseLayer
+from Base import BaseLayer
 
 
 class Dropout(BaseLayer):
     def __init__(self, prob):
         super().__init__()
         self.probability = prob
+        self.weights = 0
 
     def forward(self, input_tensor):
         if not self.testing_phase:

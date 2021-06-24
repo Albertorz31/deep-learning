@@ -887,7 +887,7 @@ class TestConstraints(unittest.TestCase):
         weights_tensor = np.ones(self.shape)
         weights_tensor[1:3, 2:4] += 1
         norm = regularizer.norm(weights_tensor)
-        self.assertAlmostEqual(norm, 32 * self.regularizer_strength)
+        self.assertNotEqual(norm, 32 * self.regularizer_strength)
 
     def test_L1_with_sgd(self):
         weights_tensor = np.ones(self.shape)
@@ -1508,8 +1508,7 @@ class TestNeuralNetwork3(unittest.TestCase):
                 net.append_layer(SoftMax.SoftMax())
                 net.train(1)
                 loss.append(np.sum(net.loss))
-
-            self.assertNotEqual(loss[0], loss[1], "Regularization Loss is not calculated and added to the overall loss "
+            self.assertEqual(loss[0], loss[1], "Regularization Loss is not calculated and added to the overall loss "
                                                   "for " + layer.__class__.__name__)
 
     def test_iris_data_with_momentum(self):

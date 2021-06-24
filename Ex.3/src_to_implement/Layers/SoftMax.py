@@ -7,6 +7,7 @@ class SoftMax:
         self.error_tensor = None
         self.y = None
         self.trainable = False
+        self.weights = 0
 
     def forward(self, input_tensor):
         # If your input consists of several samples, he takes a 1-dimensional input and

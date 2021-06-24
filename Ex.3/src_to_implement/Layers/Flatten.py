@@ -1,9 +1,13 @@
 import numpy as np
+from Base import BaseLayer
 
 
-class Flatten:
+class Flatten(BaseLayer):
     def __init__(self):
+        super().__init__()
+        self.trainable = False
         self.input_shape = None
+        self.weights = 0
 
     def forward(self, input_tensor):
         self.input_shape = np.shape(input_tensor)  # batch, channel, x, y
